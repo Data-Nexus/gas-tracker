@@ -1,4 +1,4 @@
-specVersion: 0.0.1
+specVersion: 0.0.3
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,6 +8,7 @@ dataSources:
     source:
       address: "0x26D5Bd2dfEDa983ECD6c39899e69DAE6431Dffbb"
       abi: ERC20
+      startblock: 12965000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
