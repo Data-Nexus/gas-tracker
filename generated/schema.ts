@@ -15,6 +15,9 @@ export class Block extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
+
+    this.set("BlockNum", Value.fromBigInt(BigInt.zero()));
+    this.set("BlockTime", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -43,21 +46,13 @@ export class Block extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get BlockNum(): BigInt | null {
+  get BlockNum(): BigInt {
     let value = this.get("BlockNum");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
+    return value!.toBigInt();
   }
 
-  set BlockNum(value: BigInt | null) {
-    if (!value) {
-      this.unset("BlockNum");
-    } else {
-      this.set("BlockNum", Value.fromBigInt(<BigInt>value));
-    }
+  set BlockNum(value: BigInt) {
+    this.set("BlockNum", Value.fromBigInt(value));
   }
 
   get BaseFee(): BigInt | null {
@@ -75,5 +70,14 @@ export class Block extends Entity {
     } else {
       this.set("BaseFee", Value.fromBigInt(<BigInt>value));
     }
+  }
+
+  get BlockTime(): BigInt {
+    let value = this.get("BlockTime");
+    return value!.toBigInt();
+  }
+
+  set BlockTime(value: BigInt) {
+    this.set("BlockTime", Value.fromBigInt(value));
   }
 }

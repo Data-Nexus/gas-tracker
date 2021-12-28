@@ -58,9 +58,9 @@ export class Burn__Params {
   }
 }
 
-export class ERC20 extends ethereum.SmartContract {
-  static bind(address: Address): ERC20 {
-    return new ERC20("ERC20", address);
+export class USDC extends ethereum.SmartContract {
+  static bind(address: Address): USDC {
+    return new USDC("USDC", address);
   }
 
   name(): string {

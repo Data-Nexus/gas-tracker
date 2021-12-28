@@ -3,23 +3,22 @@ schema:
   file: schema.graphql
 dataSources:
   - kind: ethereum
-    name: ERC20
+    name: USDC
     network: mainnet
     source:
       address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-      abi: ERC20
-      startBlock: 12965000
+      abi: USDC
+      startBlock: 13800000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - Transfer
-        - Burn
+        - Block
       abis:
-        - name: ERC20
-          file: ERC20\abis\ERC20.json
+        - name: USDC
+          file: USDC\abis\USDC.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-      file: ERC20\ERC20.wasm
+      file: USDC\USDC.wasm
