@@ -1,7 +1,5 @@
 ﻿# gas-tracker
 
-TODO:
-Incorrect Assumptions: USDC is transferred in ~90% of blocks, there is likely a better contract (or combination) to listen to.
 
 ## **Example Queries 🖥️**
 
@@ -22,3 +20,4 @@ query LatestBaseFee {
 }
 ```
 
+Updated to listen to all ERC20 transfers which ingests 98% of blocks.
