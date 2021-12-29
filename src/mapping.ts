@@ -13,7 +13,6 @@ export function handleTransfer(event: Transfer): void {
     entity.BaseFee = event.block.baseFeePerGas
     entity.BlockNum = event.block.number
     entity.BlockTime = event.block.timestamp
-    entity.GasUsed = event.block.gasUsed
     entity.save()
   }
 
