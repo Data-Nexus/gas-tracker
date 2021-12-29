@@ -3,4 +3,5 @@ type Block @entity {
   BlockNum: BigInt!
   BaseFee: BigInt
   BlockTime: BigInt!
+  GasUsed: BigInt
 }

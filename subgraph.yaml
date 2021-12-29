@@ -2,12 +2,11 @@ specVersion: 0.0.3
 schema:
   file: ./schema.graphql
 dataSources:
-  - kind: ethereum
-    name: USDC
+  - kind: ethereum/contract
+    name: ERC20
     network: mainnet
     source:
-      address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-      abi: USDC
+      abi: ERC20
       startBlock: 13800000
     mapping:
       kind: ethereum/events
@@ -16,8 +15,8 @@ dataSources:
       entities:
         - Block
       abis:
-        - name: USDC
-          file: ./abis/USDC.json
+        - name: ERC20
+          file: ./abis/ERC20.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer

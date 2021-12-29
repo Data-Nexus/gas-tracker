@@ -80,4 +80,21 @@ export class Block extends Entity {
   set BlockTime(value: BigInt) {
     this.set("BlockTime", Value.fromBigInt(value));
   }
+
+  get GasUsed(): BigInt | null {
+    let value = this.get("GasUsed");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set GasUsed(value: BigInt | null) {
+    if (!value) {
+      this.unset("GasUsed");
+    } else {
+      this.set("GasUsed", Value.fromBigInt(<BigInt>value));
+    }
+  }
 }

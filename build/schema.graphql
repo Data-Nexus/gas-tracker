@@ -1,5 +1,7 @@
 type Block @entity {
   id: ID!
-  BlockNum: BigInt
-  BaseFee: BigInt 
+  BlockNum: BigInt!
+  BaseFee: BigInt
+  BlockTime: BigInt!
+  GasUsed: BigInt
 }

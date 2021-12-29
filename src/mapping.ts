@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts"
-import { USDC, Transfer, Burn } from "../generated/USDC/USDC"
+import { ERC20, Transfer} from "../generated/ERC20/ERC20"
 import { Block } from "../generated/schema"
 
 export function handleTransfer(event: Transfer): void {
@@ -13,7 +13,7 @@ export function handleTransfer(event: Transfer): void {
     entity.BaseFee = event.block.baseFeePerGas
     entity.BlockNum = event.block.number
     entity.BlockTime = event.block.timestamp
-
+    entity.GasUsed = event.block.gasUsed
     entity.save()
   }
 

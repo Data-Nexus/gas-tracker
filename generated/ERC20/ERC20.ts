@@ -10,6 +10,32 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
+export class Approval extends ethereum.Event {
+  get params(): Approval__Params {
+    return new Approval__Params(this);
+  }
+}
+
+export class Approval__Params {
+  _event: Approval;
+
+  constructor(event: Approval) {
+    this._event = event;
+  }
+
+  get owner(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get spender(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get value(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+}
+
 export class Transfer extends ethereum.Event {
   get params(): Transfer__Params {
     return new Transfer__Params(this);
@@ -36,31 +62,9 @@ export class Transfer__Params {
   }
 }
 
-export class Burn extends ethereum.Event {
-  get params(): Burn__Params {
-    return new Burn__Params(this);
-  }
-}
-
-export class Burn__Params {
-  _event: Burn;
-
-  constructor(event: Burn) {
-    this._event = event;
-  }
-
-  get from(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get value(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-}
-
-export class USDC extends ethereum.SmartContract {
-  static bind(address: Address): USDC {
-    return new USDC("USDC", address);
+export class ERC20 extends ethereum.SmartContract {
+  static bind(address: Address): ERC20 {
+    return new ERC20("ERC20", address);
   }
 
   name(): string {
@@ -164,63 +168,23 @@ export class USDC extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toI32());
   }
 
-  burn(_value: BigInt): boolean {
-    let result = super.call("burn", "burn(uint256):(bool)", [
-      ethereum.Value.fromUnsignedBigInt(_value)
-    ]);
-
-    return result[0].toBoolean();
-  }
-
-  try_burn(_value: BigInt): ethereum.CallResult<boolean> {
-    let result = super.tryCall("burn", "burn(uint256):(bool)", [
-      ethereum.Value.fromUnsignedBigInt(_value)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
-  balanceOf(param0: Address): BigInt {
+  balanceOf(_owner: Address): BigInt {
     let result = super.call("balanceOf", "balanceOf(address):(uint256)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(_owner)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_balanceOf(param0: Address): ethereum.CallResult<BigInt> {
+  try_balanceOf(_owner: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall("balanceOf", "balanceOf(address):(uint256)", [
-      ethereum.Value.fromAddress(param0)
+      ethereum.Value.fromAddress(_owner)
     ]);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
-  burnFrom(_from: Address, _value: BigInt): boolean {
-    let result = super.call("burnFrom", "burnFrom(address,uint256):(bool)", [
-      ethereum.Value.fromAddress(_from),
-      ethereum.Value.fromUnsignedBigInt(_value)
-    ]);
-
-    return result[0].toBoolean();
-  }
-
-  try_burnFrom(_from: Address, _value: BigInt): ethereum.CallResult<boolean> {
-    let result = super.tryCall("burnFrom", "burnFrom(address,uint256):(bool)", [
-      ethereum.Value.fromAddress(_from),
-      ethereum.Value.fromUnsignedBigInt(_value)
-    ]);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   symbol(): string {
@@ -238,38 +202,20 @@ export class USDC extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toString());
   }
 
-  approveAndCall(
-    _spender: Address,
-    _value: BigInt,
-    _extraData: Bytes
-  ): boolean {
-    let result = super.call(
-      "approveAndCall",
-      "approveAndCall(address,uint256,bytes):(bool)",
-      [
-        ethereum.Value.fromAddress(_spender),
-        ethereum.Value.fromUnsignedBigInt(_value),
-        ethereum.Value.fromBytes(_extraData)
-      ]
-    );
+  transfer(_to: Address, _value: BigInt): boolean {
+    let result = super.call("transfer", "transfer(address,uint256):(bool)", [
+      ethereum.Value.fromAddress(_to),
+      ethereum.Value.fromUnsignedBigInt(_value)
+    ]);
 
     return result[0].toBoolean();
   }
 
-  try_approveAndCall(
-    _spender: Address,
-    _value: BigInt,
-    _extraData: Bytes
-  ): ethereum.CallResult<boolean> {
-    let result = super.tryCall(
-      "approveAndCall",
-      "approveAndCall(address,uint256,bytes):(bool)",
-      [
-        ethereum.Value.fromAddress(_spender),
-        ethereum.Value.fromUnsignedBigInt(_value),
-        ethereum.Value.fromBytes(_extraData)
-      ]
-    );
+  try_transfer(_to: Address, _value: BigInt): ethereum.CallResult<boolean> {
+    let result = super.tryCall("transfer", "transfer(address,uint256):(bool)", [
+      ethereum.Value.fromAddress(_to),
+      ethereum.Value.fromUnsignedBigInt(_value)
+    ]);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -277,21 +223,24 @@ export class USDC extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  allowance(param0: Address, param1: Address): BigInt {
+  allowance(_owner: Address, _spender: Address): BigInt {
     let result = super.call(
       "allowance",
       "allowance(address,address):(uint256)",
-      [ethereum.Value.fromAddress(param0), ethereum.Value.fromAddress(param1)]
+      [ethereum.Value.fromAddress(_owner), ethereum.Value.fromAddress(_spender)]
     );
 
     return result[0].toBigInt();
   }
 
-  try_allowance(param0: Address, param1: Address): ethereum.CallResult<BigInt> {
+  try_allowance(
+    _owner: Address,
+    _spender: Address
+  ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "allowance",
       "allowance(address,address):(uint256)",
-      [ethereum.Value.fromAddress(param0), ethereum.Value.fromAddress(param1)]
+      [ethereum.Value.fromAddress(_owner), ethereum.Value.fromAddress(_spender)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -334,7 +283,7 @@ export class ApproveCall__Outputs {
     this._call = call;
   }
 
-  get success(): boolean {
+  get value0(): boolean {
     return this._call.outputValues[0].value.toBoolean();
   }
 }
@@ -376,79 +325,7 @@ export class TransferFromCall__Outputs {
     this._call = call;
   }
 
-  get success(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
-}
-
-export class BurnCall extends ethereum.Call {
-  get inputs(): BurnCall__Inputs {
-    return new BurnCall__Inputs(this);
-  }
-
-  get outputs(): BurnCall__Outputs {
-    return new BurnCall__Outputs(this);
-  }
-}
-
-export class BurnCall__Inputs {
-  _call: BurnCall;
-
-  constructor(call: BurnCall) {
-    this._call = call;
-  }
-
-  get _value(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class BurnCall__Outputs {
-  _call: BurnCall;
-
-  constructor(call: BurnCall) {
-    this._call = call;
-  }
-
-  get success(): boolean {
-    return this._call.outputValues[0].value.toBoolean();
-  }
-}
-
-export class BurnFromCall extends ethereum.Call {
-  get inputs(): BurnFromCall__Inputs {
-    return new BurnFromCall__Inputs(this);
-  }
-
-  get outputs(): BurnFromCall__Outputs {
-    return new BurnFromCall__Outputs(this);
-  }
-}
-
-export class BurnFromCall__Inputs {
-  _call: BurnFromCall;
-
-  constructor(call: BurnFromCall) {
-    this._call = call;
-  }
-
-  get _from(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _value(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class BurnFromCall__Outputs {
-  _call: BurnFromCall;
-
-  constructor(call: BurnFromCall) {
-    this._call = call;
-  }
-
-  get success(): boolean {
+  get value0(): boolean {
     return this._call.outputValues[0].value.toBoolean();
   }
 }
@@ -485,84 +362,34 @@ export class TransferCall__Outputs {
   constructor(call: TransferCall) {
     this._call = call;
   }
-}
 
-export class ApproveAndCallCall extends ethereum.Call {
-  get inputs(): ApproveAndCallCall__Inputs {
-    return new ApproveAndCallCall__Inputs(this);
-  }
-
-  get outputs(): ApproveAndCallCall__Outputs {
-    return new ApproveAndCallCall__Outputs(this);
-  }
-}
-
-export class ApproveAndCallCall__Inputs {
-  _call: ApproveAndCallCall;
-
-  constructor(call: ApproveAndCallCall) {
-    this._call = call;
-  }
-
-  get _spender(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _value(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get _extraData(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
-  }
-}
-
-export class ApproveAndCallCall__Outputs {
-  _call: ApproveAndCallCall;
-
-  constructor(call: ApproveAndCallCall) {
-    this._call = call;
-  }
-
-  get success(): boolean {
+  get value0(): boolean {
     return this._call.outputValues[0].value.toBoolean();
   }
 }
 
-export class ConstructorCall extends ethereum.Call {
-  get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
+export class DefaultCall extends ethereum.Call {
+  get inputs(): DefaultCall__Inputs {
+    return new DefaultCall__Inputs(this);
   }
 
-  get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
+  get outputs(): DefaultCall__Outputs {
+    return new DefaultCall__Outputs(this);
   }
 }
 
-export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
+export class DefaultCall__Inputs {
+  _call: DefaultCall;
 
-  constructor(call: ConstructorCall) {
+  constructor(call: DefaultCall) {
     this._call = call;
   }
-
-  get initialSupply(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get tokenName(): string {
-    return this._call.inputValues[1].value.toString();
-  }
-
-  get tokenSymbol(): string {
-    return this._call.inputValues[2].value.toString();
-  }
 }
 
-export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
+export class DefaultCall__Outputs {
+  _call: DefaultCall;
 
-  constructor(call: ConstructorCall) {
+  constructor(call: DefaultCall) {
     this._call = call;
   }
 }
