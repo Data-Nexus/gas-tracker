@@ -19,5 +19,3 @@ query LatestBaseFee {
   }
 }
 ```
-
-Updated to listen to all ERC20 transfers which ingests 98% of blocks.
