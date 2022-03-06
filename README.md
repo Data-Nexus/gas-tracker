@@ -7,7 +7,7 @@
 https://thegraph.com/docs/en/developer/querying-from-your-app/
 
 **Temporary Query URL - This is rate limited for testing purposes:**
-https://api.studio.thegraph.com/query/533/gas-tracker/v0.0.5
+https://api.studio.thegraph.com/query/533/gas-tracker/v2.0.0
 
 ### Gather the most recent base fee in a block:
 
